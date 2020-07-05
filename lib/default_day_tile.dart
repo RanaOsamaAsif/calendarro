@@ -17,9 +17,13 @@ class CalendarroDayItem extends StatelessWidget {
     calendarroState = Calendarro.of(context);
 
     bool daySelected = calendarroState.isDateSelected(date);
+    bool dayIsUnavailable = calendarroState.isDateAvailable(date);
 
     BoxDecoration boxDecoration;
-    if (daySelected) {
+    if (dayIsUnavailable) {
+      boxDecoration =
+          BoxDecoration(color: Colors.red[200], shape: BoxShape.circle);
+    } else if (daySelected) {
       boxDecoration = BoxDecoration(color: Colors.blue, shape: BoxShape.circle);
     } else if (isToday) {
       boxDecoration = BoxDecoration(
@@ -32,22 +36,24 @@ class CalendarroDayItem extends StatelessWidget {
 
     return Expanded(
         child: GestureDetector(
-          child: Container(
-              height: 40.0,
-              decoration: boxDecoration,
-              child: Center(
-                  child: Text(
-                    "${date.day}",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: textColor),
-                  ))),
-          onTap: handleTap,
-          behavior: HitTestBehavior.translucent,
-        ));
+      child: Container(
+          height: 40.0,
+          decoration: boxDecoration,
+          child: Center(
+              child: Text(
+            "${date.day}",
+            textAlign: TextAlign.center,
+            style: TextStyle(color: textColor),
+          ))),
+      onTap: () {
+        handleTap(dayIsUnavailable);
+      },
+      behavior: HitTestBehavior.translucent,
+    ));
   }
 
-  void handleTap() {
-    if (onTap != null) {
+  void handleTap(bool canBeTapped) {
+    if (onTap != null && !canBeTapped) {
       onTap(date);
     }
 
